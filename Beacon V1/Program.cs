@@ -1,24 +1,74 @@
-﻿using System.Text.Json;
+﻿using Beacon_V1;
+using System.Text.Json;
+using System.Xml.Linq;
 
-var entreprise = "discordstatus";
-var url = $"https://{entreprise}.com/api/v2/summary.json";
+var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-using var client = new HttpClient();
-client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+List<Service> services;
+await using (var file = File.OpenRead("services.json"))
+{
+    services = await JsonSerializer.DeserializeAsync<List<Service>>(file, options) ?? [];
+}
+var results = await Task.WhenAll(services.Select(GetStatusAsync));
 
 
-var stream = await client.GetStreamAsync(url);
-using var doc = JsonDocument.Parse(stream);
+foreach (var result in results)
+    Print(result);
 
-var status = doc.RootElement.GetProperty("status");
+static async Task<StatusResult> GetStatusAsync(Service service)
+{
+    try
+    {
+        using var doc = await Client.GetJsonAsync(service.Url);
 
-var indicator = status.GetProperty("indicator").GetString();
-if (indicator == "none")
-    indicator = "Operational";
+        var page = doc.RootElement.GetProperty("page");
+        var status = doc.RootElement.GetProperty("status");
 
-var description = status.GetProperty("description").GetString();
+        var name = page.GetProperty("name").ToString();
+        var indicator = status.GetProperty("indicator").ToString();
 
-Console.WriteLine("Status for Discord.com : ");
-Console.WriteLine();
-Console.WriteLine($"indicator = {indicator}");
-Console.WriteLine($"description = {description}");
+        if (indicator == "none")
+            indicator = "Operational";
+
+        var description = status.GetProperty("description").ToString();
+
+        return new StatusResult
+        {
+            Name = name,
+            Indicator = indicator,
+            Description = description,
+            Error = null
+        };
+    }
+    catch (Exception ex)
+    {
+
+        return new StatusResult
+        {
+            Name = service.Name,
+            Indicator = null,
+            Description = null,
+            Error = ex.Message
+        };
+    }
+
+
+}
+static void Print(StatusResult result)
+{
+    Console.WriteLine(result.Name);
+
+    Console.Write("Indicator: ");
+    Console.ForegroundColor = result.Indicator switch
+    {
+        "Operational" => ConsoleColor.Green,
+        "minor" => ConsoleColor.Yellow,
+        "major" or "critical" => ConsoleColor.Red,
+        _ => ConsoleColor.DarkGray
+    };
+    Console.WriteLine(result.Indicator);
+    Console.ResetColor();
+
+    Console.WriteLine(result.Error is null ? $" Description:{result.Description}" : $"Error: {result.Error}");
+    Console.WriteLine();
+}

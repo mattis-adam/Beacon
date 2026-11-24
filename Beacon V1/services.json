@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Claude",
+    "url": "https://status.claude.com/api/v2/status.json"
+  },
+  {
+    "name": "Discord",
+    "url": "https://www.discordstatus.com/api/v2/status.json"
+  },
+  {
+    "name": "GitHub",
+    "url": "https://www.githubstatus.com/api/v2/status.json"
+  },
+  {
+    "name": "Cloudflare",
+    "url": "https://www.cloudflarestatus.com/api/v2/status.json"
+  },
+  {
+    "name": "Reddit",
+    "url": "https://www.redditstatus.com/api/v2/status.json"
+  },
+  {
+    "name": "npm",
+    "url": "https://status.npmjs.org/api/v2/status.json"
+  },
+  {
+    "name": "DigitalOcean",
+    "url": "https://status.digitalocean.com/api/v2/status.json"
+  },
+  {
+    "name": "Vercel",
+    "url": "https://www.vercel-status.com/api/v2/status.json"
+  },
+  {
+    "name": "Twilio",
+    "url": "https://status.twilio.com/api/v2/status.json"
+  },
+  {
+    "name": "Dropbox",
+    "url": "https://status.dropbox.com/api/v2/status.json"
+  },
+
+  {
+    "name": "TEST-404",
+    "url": "https://www.githubstatus.com/api/v2/nexistepas.json"
+  },
+  {
+    "name": "TEST-DNS",
+    "url": "https://nexistepas.invalid/api/v2/status.json"
+  }
+]
