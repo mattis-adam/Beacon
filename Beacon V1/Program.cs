@@ -1,16 +1,16 @@
 ﻿using Beacon_V1;
 using System.Text.Json;
-using System.Xml.Linq;
 
 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
 List<Service> services;
+
 await using (var file = File.OpenRead("services.json"))
 {
     services = await JsonSerializer.DeserializeAsync<List<Service>>(file, options) ?? [];
 }
-var results = await Task.WhenAll(services.Select(GetStatusAsync));
 
+var results = await Task.WhenAll(services.Select(GetStatusAsync));
 
 foreach (var result in results)
     Print(result);
@@ -42,7 +42,6 @@ static async Task<StatusResult> GetStatusAsync(Service service)
     }
     catch (Exception ex)
     {
-
         return new StatusResult
         {
             Name = service.Name,
@@ -51,8 +50,6 @@ static async Task<StatusResult> GetStatusAsync(Service service)
             Error = ex.Message
         };
     }
-
-
 }
 static void Print(StatusResult result)
 {
