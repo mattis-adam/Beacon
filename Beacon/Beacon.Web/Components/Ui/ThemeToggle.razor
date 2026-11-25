@@ -2,7 +2,7 @@
 @using Beacon.Web.Components.Ui;
 
 <button type="button" class="theme-toggle" @onclick="ToggleAsync"
-        aria-label="@(isNight ? "Passer au thème Jour" : "Passer au thème Nuit")">
+        aria-label="@(isNight ? "Switch to Day theme" : "Switch to Night theme")">
     <Icon Path="@(isNight ? Icons.Sun : Icons.Moon)" Size="20" Stroke="2" />
 </button>
 

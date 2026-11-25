@@ -14,7 +14,7 @@
         <span class="brand-name">Beacon</span>
     </div>
     <div class="header-actions">
-        <span class="refresh">Actualisé <RelativeTime Value="lastRefresh" /></span>
+        <span class="refresh">updated <RelativeTime Value="lastRefresh" /></span>
         <ThemeToggle />
     </div>
 </header>
@@ -23,14 +23,14 @@
 {
     <p class="banner-error" role="alert">
         <Icon Path="@Icons.AlertCircle" Size="18" Stroke="2" />
-        API Beacon injoignable — dernières données affichées
+        Unreachable Beacon API—last data shown
     </p>
 }
 
 <main class="page">
     @if (overview is null)
     {
-        <p class="loading">@(error is null ? "Chargement…" : "Impossible de récupérer les statuts pour le moment.")</p>
+        <p class="loading">@(error is null ? "Loading…" : "Unable to retrieve statuses at this time.")</p>
     }
     else
     {
@@ -39,7 +39,6 @@
         <section class="section" aria-labelledby="sources-title">
             <div class="section-head">
                 <h2 id="sources-title" class="section-title">Sources</h2>
-                <span class="section-hint">Triées du plus grave au moins grave</span>
             </div>
             <div class="sources">
                 @foreach (var s in SortedSources)
@@ -48,8 +47,6 @@
                 }
             </div>
         </section>
-
-        <StatusLegend />
     }
 </main>
 

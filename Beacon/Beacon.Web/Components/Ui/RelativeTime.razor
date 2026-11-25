@@ -6,8 +6,8 @@
 
 @code {
     [Parameter] public DateTimeOffset? Value { get; set; }
-    [Parameter] public string Prefix { get; set; } = "il y a";
-    [Parameter] public string Never { get; set; } = "jamais";
+    [Parameter] public string Prefix { get; set; } = "there are";
+    [Parameter] public string Never { get; set; } = "never";
 
     private Timer? timer;
 
@@ -23,7 +23,7 @@
 
         return elapsed.TotalSeconds switch
         {
-            < 5 => "à l'instant",
+            < 5 => "right now",
             < 60 => $"{Prefix} {(int)elapsed.TotalSeconds} s",
             < 3600 => $"{Prefix} {(int)elapsed.TotalMinutes} min",
             _ => $"{Prefix} {(int)elapsed.TotalHours} h",
