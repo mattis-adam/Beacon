@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Beacon.Api/Beacon.Api.csproj" />
+  <Project Path="Beacon.Contracts/Beacon.Contracts.csproj" />
+  <Project Path="Beacon.Web/Beacon.Web.csproj" />
+</Solution>
