@@ -1,0 +1,25 @@
+﻿<div class="lighthouse" style="width:@(Size)px;height:@(Size)px">
+    <svg viewBox="0 0 64 64" width="@(Size * 0.875)" height="@(Size * 0.875)" aria-hidden="true">
+        @if (ShowBeams)
+        {
+            <path class="beam" d="M32 19 0 9v20z" fill="@LampColor" />
+            <path class="beam" d="M32 19 64 9v20z" fill="@LampColor" />
+        }
+        <path d="M27 24h10l3 32H24z" fill="#1E3A5F" />
+        <path d="M25.5 40h13l.6 6H24.9z" fill="#E7D8B9" />
+        <path d="M26.3 30h11.4l.4 4H25.9z" fill="#E7D8B9" />
+        <rect x="26" y="14" width="12" height="10" rx="2" fill="#1E3A5F" />
+        <circle class="@(Pulse ? "lamp pulse" : "lamp")" cx="32" cy="19" r="3.5" fill="@LampColor" />
+        <path d="M24 14h16l-8-7z" fill="#1E3A5F" />
+        <rect x="20" y="56" width="24" height="4" rx="1" fill="#1E3A5F" />
+    </svg>
+</div>
+
+@code {
+    [Parameter] public ServiceStatus Status { get; set; } = ServiceStatus.Unknown;
+    [Parameter] public int Size { get; set; } = 160;
+    [Parameter] public bool ShowBeams { get; set; } = true;
+
+    private string LampColor => StatusDisplay.For(Status).Color;   
+    private bool Pulse => Status != ServiceStatus.Operational;
+}

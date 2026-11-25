@@ -1,10 +1,15 @@
 ﻿@page "/Dashboard"
+@using Beacon.Web.Components.Ui
 @rendermode InteractiveServer
 @implements IAsyncDisposable
 @inject BeaconApiClient Api
 
 <PageTitle>Beacon</PageTitle>
-
+<style>
+    body {
+        background-color: #4F46E5
+    }
+</style>
 @if (error is not null)
 {
     <p class="banner-error">API injoignable — dernières données affichées</p>
@@ -16,6 +21,14 @@
 }
 else
 {
+    <header class="app-header">
+        <div class="brand">
+            <Lighthouse Status="overview.GlobalStatus" Size="40" ShowBeams="false" />
+            <span class="brand-name">Beacon</span>
+        </div>
+        <span class="refresh">Actualisé il y a 12 s</span>
+    </header>
+    <Lighthouse Status="overview.GlobalStatus" />
     <StatusBadge Status="overview.GlobalStatus" />
     <div class="sources">
         @foreach (var s in overview.Sources)
@@ -35,7 +48,7 @@ else
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender) _ = RefreshLoopAsync(); // démarre seulement une fois interactif
+        if (firstRender) _ = RefreshLoopAsync();
     }
 
     private async Task RefreshLoopAsync()
@@ -49,7 +62,7 @@ else
                 await InvokeAsync(StateHasChanged);
             }
         }
-        catch (OperationCanceledException) { } 
+        catch (OperationCanceledException) { }
     }
 
     private async Task LoadAsync()
@@ -61,7 +74,7 @@ else
         }
         catch (Exception ex) when (!cts.IsCancellationRequested)
         {
-            error = ex.Message; 
+            error = ex.Message;
         }
     }
 
