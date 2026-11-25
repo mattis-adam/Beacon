@@ -12,6 +12,8 @@
             new("npm", "Npm", "https://status.npmjs.org"),
             new("digitalocean", "DigitalOcean", "https://status.digitalocean.com"),
             new("dropbox", "Dropbox", "https://status.dropbox.com"),
+            new("atlassian", "Atlassian", "https://status.atlassian.com"),
+            new("zoom", "Zoom", "https://status.zoom.us"),       
         ];
     }
 }
