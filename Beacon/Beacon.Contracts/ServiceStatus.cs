@@ -1,7 +1,12 @@
 ﻿namespace Beacon.Contracts
 {
-    public class ServiceStatus
+    public enum ServiceStatus
     {
-
+        Unknown,
+        Operational,
+        Degraded,
+        PartialOutage,
+        MajorOutage,
+        Maintenance
     }
 }

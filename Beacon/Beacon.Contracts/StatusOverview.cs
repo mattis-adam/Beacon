@@ -1,6 +1,4 @@
 ﻿namespace Beacon.Contracts
 {
-    public class StatusOverview
-    {
-    }
+    public sealed record StatusOverview(ServiceStatus GlobalStatus, IReadOnlyList<SourceSnapshot> Sources);
 }
