@@ -1,17 +1,37 @@
-﻿<article class="card">
-    <header>
-        <a href="@Source.Url" target="_blank" rel="noopener">@Source.Name</a>
+﻿@using Beacon.Web.Components.Ui
+<article class="card @CardCss">
+    <div class="card-head">
+        <a class="card-name" href="@Source.Url" target="_blank" rel="noopener">
+            @Source.Name
+            <Icon Path="@Icons.External" Stroke="2" />
+        </a>
         <StatusBadge Status="Source.Status" />
-    </header>
+    </div>
 
-    @if (Source.Description is not null)
+    @if (!string.IsNullOrWhiteSpace(Source.Description))
     {
-        <p>@Source.Description</p>
+        <p class="card-desc">@Source.Description</p>
     }
 
-    <small>Vérifié : @(Source.LastCheckedAt?.ToString("HH:mm:ss") ?? "jamais")</small>
+    <div class="card-foot">
+        <span>vérifié <RelativeTime Value="Source.LastCheckedAt" /></span>
+        <span>source màj <RelativeTime Value="Source.SourceUpdatedAt" Never="—" /></span>
+    </div>
 </article>
 
 @code {
     [Parameter, EditorRequired] public SourceSnapshot Source { get; set; } = default!;
+    [Parameter] public TimeSpan StaleAfter { get; set; } = TimeSpan.FromSeconds(90);
+
+    private string CardCss
+    {
+        get
+        {
+            var css = StatusDisplay.For(Source.Status).Css;  
+            css += Source.Status == ServiceStatus.Operational ? " is-calm" : " is-alert";
+
+            var stale = Source.LastCheckedAt is { } t && DateTimeOffset.UtcNow - t > StaleAfter;
+            return stale ? css + " is-stale" : css;
+        }
+    }
 }

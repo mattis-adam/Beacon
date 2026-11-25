@@ -1,0 +1,10 @@
+<section class="section" aria-labelledby="legend-title">
+    <h2 id="legend-title" class="section-title">Légende</h2>
+    <div class="legend">
+        @foreach (var s in StatusDisplay.All)
+        {
+            <StatusBadge Status="s" />
+        }
+        <span class="legend-stale">Donnée périmée → carte à 60 %</span>
+    </div>
+</section>

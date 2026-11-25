@@ -13,5 +13,15 @@ namespace Beacon.Web.Components.Ui
             ServiceStatus.Maintenance => new("status-maintenance", "var(--status-maintenance)", "⚙", "Maintenance"),
             _ => new("status-unknown", "var(--status-unknown)", "?", "Inconnu"),
         };
+
+        public static readonly ServiceStatus[] All =
+        [
+            ServiceStatus.Operational,
+            ServiceStatus.Maintenance,
+            ServiceStatus.Unknown,
+            ServiceStatus.Degraded,
+            ServiceStatus.PartialOutage,
+            ServiceStatus.MajorOutage,
+        ];
     }
 }

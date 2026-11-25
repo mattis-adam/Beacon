@@ -3,48 +3,81 @@
 @rendermode InteractiveServer
 @implements IAsyncDisposable
 @inject BeaconApiClient Api
+@inject IConfiguration Config
+@using Beacon.Contracts
 
-<PageTitle>Beacon</PageTitle>
-<style>
-    body {
-        background-color: #4F46E5
-    }
-</style>
+<PageTitle>@Title</PageTitle>
+
+<header class="app-header">
+    <div class="brand">
+        <Lighthouse Status="Global" Size="40" ShowBeams="false" />
+        <span class="brand-name">Beacon</span>
+    </div>
+    <div class="header-actions">
+        <span class="refresh">Actualisé <RelativeTime Value="lastRefresh" /></span>
+        <ThemeToggle />
+    </div>
+</header>
+
 @if (error is not null)
 {
-    <p class="banner-error">API injoignable — dernières données affichées</p>
+    <p class="banner-error" role="alert">
+        <Icon Path="@Icons.AlertCircle" Size="18" Stroke="2" />
+        API Beacon injoignable — dernières données affichées
+    </p>
 }
 
-@if (overview is null)
-{
-    <p>Chargement…</p>
-}
-else
-{
-    <header class="app-header">
-        <div class="brand">
-            <Lighthouse Status="overview.GlobalStatus" Size="40" ShowBeams="false" />
-            <span class="brand-name">Beacon</span>
-        </div>
-        <span class="refresh">Actualisé il y a 12 s</span>
-    </header>
-    <Lighthouse Status="overview.GlobalStatus" />
-    <StatusBadge Status="overview.GlobalStatus" />
-    <div class="sources">
-        @foreach (var s in overview.Sources)
-        {
-            <SourceCard @key="s.Id" Source="s" />
-        }
-    </div>
-}
+<main class="page">
+    @if (overview is null)
+    {
+        <p class="loading">@(error is null ? "Chargement…" : "Impossible de récupérer les statuts pour le moment.")</p>
+    }
+    else
+    {
+        <GlobalHero Overview="overview" RefreshSeconds="refreshSeconds" />
+
+        <section class="section" aria-labelledby="sources-title">
+            <div class="section-head">
+                <h2 id="sources-title" class="section-title">Sources</h2>
+                <span class="section-hint">Triées du plus grave au moins grave</span>
+            </div>
+            <div class="sources">
+                @foreach (var s in SortedSources)
+                {
+                    <SourceCard @key="s.Id" Source="s" StaleAfter="staleAfter" />
+                }
+            </div>
+        </section>
+
+        <StatusLegend />
+    }
+</main>
 
 @code {
     private StatusOverview? overview;
     private string? error;
+    private DateTimeOffset? lastRefresh;
+
+    private int refreshSeconds;
+    private TimeSpan staleAfter;
+
     private readonly CancellationTokenSource cts = new();
     private PeriodicTimer? timer;
 
-    protected override Task OnInitializedAsync() => LoadAsync();
+    private ServiceStatus Global => overview?.GlobalStatus ?? ServiceStatus.Unknown;
+
+    private string Title => overview is null ? "Beacon" : $"Beacon · {StatusDisplay.For(Global).Label}";
+
+    private IEnumerable<SourceSnapshot> SortedSources => overview!.Sources
+        .OrderByDescending(s => StatusDisplay.For(s.Status).Label)
+        .ThenBy(s => s.Name);
+
+    protected override Task OnInitializedAsync()
+    {
+        refreshSeconds = Config.GetValue("Dashboard:RefreshSeconds", 30);
+        staleAfter = TimeSpan.FromSeconds(Config.GetValue("Dashboard:StaleAfterSeconds", 90));
+        return LoadAsync();
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -53,7 +86,7 @@ else
 
     private async Task RefreshLoopAsync()
     {
-        timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+        timer = new PeriodicTimer(TimeSpan.FromSeconds(refreshSeconds));
         try
         {
             while (await timer.WaitForNextTickAsync(cts.Token))
@@ -70,6 +103,7 @@ else
         try
         {
             overview = await Api.GetOverviewAsync(cts.Token);
+            lastRefresh = DateTimeOffset.UtcNow;
             error = null;
         }
         catch (Exception ex) when (!cts.IsCancellationRequested)

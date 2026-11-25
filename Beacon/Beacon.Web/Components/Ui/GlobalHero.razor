@@ -1,0 +1,32 @@
+<section class="hero" aria-label="Statut global">
+    <Lighthouse Status="Overview.GlobalStatus" Size="160" />
+
+    <div class="hero-text">
+        <StatusBadge Status="Overview.GlobalStatus" />
+        <h1 class="hero-title">@Headline</h1>
+        <p class="hero-sub">@Subtitle</p>
+        <p class="hero-meta">@Overview.Sources.Count() sources surveillées · rafraîchi toutes les @RefreshSeconds s</p>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public StatusOverview Overview { get; set; } = default!;
+    [Parameter] public int RefreshSeconds { get; set; } = 30;
+
+    private List<SourceSnapshot> Issues => Overview.Sources
+        .Where(s => s.Status != ServiceStatus.Operational)
+        .OrderByDescending(s => StatusDisplay.For(s.Status).Label)
+        .ToList();
+
+    private string Headline => Overview.GlobalStatus switch
+    {
+        ServiceStatus.Operational => "Tout fonctionne",
+        ServiceStatus.Maintenance => "Maintenance en cours",
+        ServiceStatus.Unknown     => "Statut incertain",
+        _ => Issues.Count == 1 ? "1 service en difficulté" : $"{Issues.Count} services en difficulté",
+    };
+
+    private string Subtitle => Issues.Count == 0
+        ? "Toutes les sources répondent normalement."
+        : string.Join(" · ", Issues.Select(s => $"{s.Name} : {s.Description ?? StatusDisplay.For(s.Status).Label}"));
+}

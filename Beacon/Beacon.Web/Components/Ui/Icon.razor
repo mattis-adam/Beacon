@@ -1,0 +1,11 @@
+@* Stroke en string : un double serait formaté "2,4" en culture fr-CH, et le SVG casserait *@
+<svg width="@Size" height="@Size" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+     stroke-width="@Stroke" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="@Path" />
+</svg>
+
+@code {
+    [Parameter, EditorRequired] public string Path { get; set; } = "";
+    [Parameter] public int Size { get; set; } = 14;
+    [Parameter] public string Stroke { get; set; } = "2.4";
+}

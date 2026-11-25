@@ -1,0 +1,34 @@
+﻿@implements IDisposable
+
+<time datetime="@Value?.ToString("O")" title="@Value?.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")">
+    @Format()
+</time>
+
+@code {
+    [Parameter] public DateTimeOffset? Value { get; set; }
+    [Parameter] public string Prefix { get; set; } = "il y a";
+    [Parameter] public string Never { get; set; } = "jamais";
+
+    private Timer? timer;
+
+    protected override void OnInitialized()
+        => timer = new Timer(_ => InvokeAsync(StateHasChanged), null, 1000, 1000);
+
+    private string Format()
+    {
+        if (Value is null) return Never;
+
+        var elapsed = DateTimeOffset.UtcNow - Value.Value;
+        if (elapsed < TimeSpan.Zero) elapsed = TimeSpan.Zero;
+
+        return elapsed.TotalSeconds switch
+        {
+            < 5 => "à l'instant",
+            < 60 => $"{Prefix} {(int)elapsed.TotalSeconds} s",
+            < 3600 => $"{Prefix} {(int)elapsed.TotalMinutes} min",
+            _ => $"{Prefix} {(int)elapsed.TotalHours} h",
+        };
+    }
+
+    public void Dispose() => timer?.Dispose();
+}

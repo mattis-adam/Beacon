@@ -1,0 +1,24 @@
+@inject IJSRuntime JS
+@using Beacon.Web.Components.Ui;
+
+<button type="button" class="theme-toggle" @onclick="ToggleAsync"
+        aria-label="@(isNight ? "Passer au thème Jour" : "Passer au thème Nuit")">
+    <Icon Path="@(isNight ? Icons.Sun : Icons.Moon)" Size="20" Stroke="2" />
+</button>
+
+@code {
+    private bool isNight = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;   
+        isNight = await JS.InvokeAsync<string>("beaconTheme.get") == "nuit";
+        StateHasChanged();
+    }
+
+    private async Task ToggleAsync()
+    {
+        isNight = !isNight;
+        await JS.InvokeVoidAsync("beaconTheme.set", isNight ? "nuit" : "jour");
+    }
+}
