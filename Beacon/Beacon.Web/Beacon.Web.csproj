@@ -7,4 +7,8 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Beacon.Contracts\Beacon.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

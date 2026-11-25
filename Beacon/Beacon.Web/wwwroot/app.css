@@ -58,3 +58,44 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+:root {
+    --status-operational: #16A34A;
+    --status-degraded: #EAB308;
+    --status-partial: #F97316;
+    --status-major: #DC2626;
+    --status-maintenance: #3B82F6;
+    --status-unknown: #9CA3AF;
+}
+
+.badge {
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.status-operational {
+    background: var(--status-operational);
+}
+
+.status-degraded {
+    background: var(--status-degraded);
+    color: #000;
+}
+
+.status-partial {
+    background: var(--status-partial);
+}
+
+.status-major {
+    background: var(--status-major);
+}
+
+.status-maintenance {
+    background: var(--status-maintenance);
+}
+
+.status-unknown {
+    background: var(--status-unknown);
+}

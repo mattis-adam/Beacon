@@ -1,7 +1,10 @@
 using Beacon.Web.Components;
+using Beacon.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddHttpClient<BeaconApiClient>(c =>
+    c.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"]!));
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -21,7 +24,5 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.Run();

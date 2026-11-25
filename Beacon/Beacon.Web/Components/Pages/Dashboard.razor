@@ -1,0 +1,74 @@
+﻿@page "/Dashboard"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject BeaconApiClient Api
+
+<PageTitle>Beacon</PageTitle>
+
+@if (error is not null)
+{
+    <p class="banner-error">API injoignable — dernières données affichées</p>
+}
+
+@if (overview is null)
+{
+    <p>Chargement…</p>
+}
+else
+{
+    <StatusBadge Status="overview.GlobalStatus" />
+    <div class="sources">
+        @foreach (var s in overview.Sources)
+        {
+            <SourceCard @key="s.Id" Source="s" />
+        }
+    </div>
+}
+
+@code {
+    private StatusOverview? overview;
+    private string? error;
+    private readonly CancellationTokenSource cts = new();
+    private PeriodicTimer? timer;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender) _ = RefreshLoopAsync(); // démarre seulement une fois interactif
+    }
+
+    private async Task RefreshLoopAsync()
+    {
+        timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cts.Token))
+            {
+                await LoadAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException) { } 
+    }
+
+    private async Task LoadAsync()
+    {
+        try
+        {
+            overview = await Api.GetOverviewAsync(cts.Token);
+            error = null;
+        }
+        catch (Exception ex) when (!cts.IsCancellationRequested)
+        {
+            error = ex.Message; 
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        timer?.Dispose();
+        cts.Dispose();
+    }
+}

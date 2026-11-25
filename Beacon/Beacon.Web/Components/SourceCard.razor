@@ -1,0 +1,17 @@
+﻿<article class="card">
+    <header>
+        <a href="@Source.Url" target="_blank" rel="noopener">@Source.Name</a>
+        <StatusBadge Status="Source.Status" />
+    </header>
+
+    @if (Source.Description is not null)
+    {
+        <p>@Source.Description</p>
+    }
+
+    <small>Vérifié : @(Source.LastCheckedAt?.ToString("HH:mm:ss") ?? "jamais")</small>
+</article>
+
+@code {
+    [Parameter, EditorRequired] public SourceSnapshot Source { get; set; } = default!;
+}

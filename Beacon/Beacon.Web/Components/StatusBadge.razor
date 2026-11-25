@@ -1,0 +1,9 @@
+﻿@using Beacon.Web.Components.Ui
+@{
+    var d = StatusDisplay.For(Status);
+}
+<span class="badge @d.Css">@d.Icon @d.Label</span>
+
+@code {
+    [Parameter] public ServiceStatus Status { get; set; }
+}
